@@ -44,11 +44,31 @@ class _HomePageState extends State<HomePage> {
   }
   
   Widget _buildMenuItem(String iconpath, String title, String routename){
-    return Column(
-      children: [
-        Image.asset(iconpath),
-        Text(title)
-      ],
+    return InkWell(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 2)
+            )
+          ]
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(iconpath, width: 35,),
+            const SizedBox(height: 6,),
+            Text(title, style: TextStyle(
+              fontFamily: 'PoppinsRegular',
+              fontSize: 13,
+            ),)
+          ],
+        ),
+      ),
     );
   }
   
