@@ -1,4 +1,5 @@
 import 'dart:async'; //timer coundown
+import 'dart:nativewrappers/_internal/vm/lib/ffi_native_type_patch.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart'; //carousel slider
 import 'package:http/http.dart' as http; //ambil data API
@@ -20,6 +21,13 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final CarouselController _controller = CarouselController();
   int _currentIndex = 0;
+  bool _isLoading = true;
+  Duration? _timeRemaining;
+  Timer? _countdownTimer;
+  String _location = 'Mengambil Lokasi...';
+  String _prayTime = 'Loading...';
+  String _backgroundImage= 'assets/images/bg_morning.png';
+  List<dynamic>? _jadwalShalat;
 
   final posterlist = const <String>[
     'assets/images/ramadhan-kareem.png',
@@ -30,6 +38,24 @@ class _HomePageState extends State<HomePage> {
     'assets/images/bg_night.png',
   ];
 
+    String _formatDuration(Duration d) {
+    final hours = d.inHours;
+    final min = d.inMinutes.remainder(60);
+    return "$hours jam $min menit lagi";
+  }
+  
+  Void initstate() {
+    super.initState();
+  }
+
+Future _getBackgroundImage(DateTime now) async {
+  if (now.hour < 12) {
+    return 'assets/images/bg_morning.png';
+  } else if(now.hour < 18) {
+    return 'assets/images/bg_afternoon.png';
+  }
+
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,6 +67,7 @@ class _HomePageState extends State<HomePage> {
               //[MENU WAKTU SHOLAT BY LOKASI]
               //=========================================
               _buildHeroSection(),
+              const SizedBox(height: 65,),
         
               // ========================================
               //[MENU SECTION]
@@ -62,6 +89,7 @@ class _HomePageState extends State<HomePage> {
   //=======================================
   Widget _buildHeroSection() {
     return Stack(
+      clipBehavior: Clip.none,
       children: [
         Container(
           width: double.infinity,
@@ -74,7 +102,7 @@ class _HomePageState extends State<HomePage> {
             ),
             image: DecorationImage(
               image: AssetImage(
-                'asset/image/bg_night.png'
+                '${_getBackgroundImage(DateTime.now())}'
               ),
               fit: BoxFit.cover,
             )
@@ -112,6 +140,66 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
+
+        Positioned(
+          bottom: -55,
+          left: 20,
+          right: 20,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 2,
+                  offset: Offset(0, 4),
+                  color: Colors.amber.withOpacity(0.4)
+                )
+              ]
+            ),
+            padding: EdgeInsets.symmetric(
+              vertical: 16,
+              horizontal: 14
+            ),
+            child: Column(
+              children: [
+                Text(
+                  'waktu shalat selanjutnya',
+                  style: TextStyle(
+                    fontFamily: 'PoppinsRegular',
+                    fontSize: 14,
+                    color: Colors.black
+                  ),
+                ),
+                Text(
+                  'Ashar',
+                  style: TextStyle(
+                    fontFamily: 'PoppinsBold',
+                    fontSize: 20,
+                    color: Colors.amber
+                  ),
+                ),
+                Text(
+                  '14:22',
+                  style: TextStyle(
+                    fontFamily: 'PoppinsBold',
+                    fontSize: 28,
+                    color: Colors.black38
+                  ),
+                ),
+                Text(
+                  '5 jam 10 menit',
+                  style: TextStyle(
+                    fontFamily: 'PoppinsRegular',
+                    fontSize: 13,
+                    color: Colors.black
+                  ),
+                )
+              ],
+            ),
+          ),
+        )
+
       ],
     );
   }
